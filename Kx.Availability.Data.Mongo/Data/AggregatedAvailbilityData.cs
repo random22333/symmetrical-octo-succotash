@@ -10,6 +10,13 @@ using Serilog;
 
 namespace Kx.Availability.Data.Mongo.Data;
 
+/*
+There is tight coupling between the data access classes and MongoDB specific types like IMongoCollection. An abstraction could be used to
+decouple the data access from the implementation.
+The AggregatedAvailabilityData class has multiple responsibilities - it handles loading data, transforming it, saving state, etc. This could be split into separate classes 
+for better separation of concerns.*/
+
+
 public class AggregatedAvailabilityData : IDataAccessAggregation
 {
     private readonly ITenant _tenant;
