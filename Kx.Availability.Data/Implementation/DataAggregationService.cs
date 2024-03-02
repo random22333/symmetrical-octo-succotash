@@ -13,6 +13,45 @@ using Serilog;
 // ReSharper disable TemplateIsNotCompileTimeConstantProblem
 
 // ReSharper disable PossibleMultipleEnumeration
+/*
+This class has several private fields that are initialized in the constructor:
+
+_tenant - an ITenant dependency injected for the current tenant
+_httpClientFactory - for making HTTP requests
+_aggregateData - provides access to perform data aggregation
+_locationsData and _roomsData - give access to temporary data storage
+_coreBedroomsUrl and _coreLocationsUrl - URLs to fetch bedroom and location data from
+_pageSize - number of records to fetch per API request
+The main purpose of this class is to orchestrate:
+
+Fetching location data from an API endpoint
+Fetching bedroom data from another API endpoint
+Storing the fetched data into temporary collections
+Combining the temporary data into a final aggregated data model
+It achieves this through several key methods:
+
+CleanTenantTempTablesAsync() - Clears out the temporary data collections
+CreateLocationsIndexes() and CreateRoomsIndexes() - Sets up indexes on the temp collections
+DoLocationsAsync() and DoRoomsAsync() - Orchestrates fetching paginated data from the APIs
+MashTempTablesIntoTheAvailabilityModelAsync() - Combines the temp data into the final model
+The overall flow is:
+
+Constructor initializes dependencies
+ReloadOneTenantsDataAsync() orchestrates the overall process
+It clears temp data, creates indexes, fetches location and bedroom data
+Fetched data is stored in temporary collections
+Finally it mashes the temp data into the unified data model
+So in summary, this class fetches data from multiple sources, stores it temporarily, 
+then combines it into a final aggregated data model. The main logic is coordinating and orchestrating the data aggregation pipeline.
+_aggregateData = DataAccessHelper.ParseAggregationDataAccess(dbAccessAggregate);
+
+DataAccessFactory directly instantiates concrete data access classes. 
+This makes it difficult to mock or swap implementations. Could use abstraction/factory instead.
+
+There is tight coupling between the data access classes and MongoDB specific types like IMongoCollection. An abstraction could be used to
+decouple the data access from the implementation.
+The AggregatedAvailabilityData class has multiple responsibilities - it handles loading data, transforming it, saving state, etc. This could be split into separate classes 
+for better separation of concerns.*/
 
 namespace Kx.Availability.Data.Implementation;
 
